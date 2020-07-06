@@ -1,0 +1,862 @@
+<HTML>
+
+<head>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
+<link rel='stylesheet' type='text/css' href='componentes.css'/>
+<link rel='stylesheet' type='text/css' href='plantilla.css'/>
+<script src="morris/raphael-min.js"></script>
+<script src="morris/morris.min.js"></script>
+</head>
+
+
+
+
+
+
+
+<script>
+ var idioma='I';
+ var ventana="EXPLORADOR";
+var interv;
+	var negativo=false;
+	var totalbat,complbat;
+	var elementoQuest;
+	var tsCreaQ,tsactual;
+	var completado;
+	var tiempofaltantems;
+//mostrar();
+
+var player = getParameterByName('player');
+var idio = getParameterByName('idiom');
+if(player.length>1)
+  explorar(player)
+else
+  base();
+
+ 
+
+function base()
+{
+ventana="BASE";
+document.close();
+document.write("<link rel='stylesheet' type='text/css' href='plantilla.css'/>");
+document.write("<link rel='stylesheet' type='text/css' href='componentes.css'/>");
+document.write("<center><h1>MONSTERS EXPLORER</h1></center>");
+document.write("<form name='formulario' method='get' action='#'>");
+document.write("<table border='1'><tr><td><strong>PLAYER: </strong></td><td colspan='2'><input type='text' name='player' id='nombre' size=20></input></td></tr>");
+document.write("<tr><td><strong>LANGUAGE:</strong></td>");
+
+
+document.write("<td><input type='radio' name='idiom' value='0' checked >English</input></td>");
+
+document.write("<td><input type='radio' name='idiom' value='1' >Español</input></td></tr>");
+
+
+
+document.write("<tr ><td colspan=3 style='text-align:center'><input type='submit' id='botoncito' class='boton' value='EXPLORE'></input></td></tr>");
+
+document.write("<tr><td colspan='3'><span id='mensaje'>Enter the player's name</span></td></tr>");
+
+document.write("</table>");
+document.write("</form></body>");
+}
+
+
+
+
+
+
+function mostrar()
+{
+document.getElementById("botoncito").disabled=true;
+
+   
+  var jugador=document.getElementById("nombre").value;
+  explorar(jugador);
+}
+
+
+
+
+
+
+
+
+
+
+
+function explorar(jugador)
+{
+  ventana="EXPLORADOR";
+   if(idio==0)
+   idioma='I';
+  else
+  idioma='E';  
+  
+//var jugador="eliaschess333";
+//var jugador="leviackerman";
+//var jugador="vjap55";
+//var jugador="valnamor";
+//var jugador="sawko";
+//var jugador="bji1203";
+//var jugador="magodelcaosnegro";
+//var jugador="criptoanarquista";
+//var jugador="yonilkar";
+  if(idioma=='E')
+  espanol();
+ else if(idioma=='I')
+ ingles();
+      $.get("https://game-api.splinterlands.com/settings", function(config, estadorespuesta) {
+  if(config!=null)
+    {
+  	var decp=config.dec_price
+  
+$.get("https://game-api.splinterlands.com/players/details?name="+jugador, function(datos, estado) 
+{
+
+if(datos!=null)
+{
+if(datos.error!=null)
+  {
+  if(idioma=='E')
+  document.getElementById('mensaje').innerHTML="Jugador no encontrado";
+  else
+    if(ventana=="BASE")
+	 {
+    document.getElementById('mensaje').innerHTML="Player Not Found";
+	document.getElementById("botoncito").disabled=false;
+	  return false;
+   }
+       else
+	 {
+  base();
+      document.getElementById('mensaje').innerHTML="Player Not Found";
+	  return false;
+   }
+
+  }
+var ratingAc=datos.rating;
+
+if(datos.season_details!=null)
+var ultimoRatingMax=datos.season_details.max_rating;
+else
+ultimoRatingMax=0;
+
+if(datos.guild!=null)
+  {
+  var gremio=datos.guild.name;
+   var nivelGremio=datos.guild.level;
+   var idGremio=datos.guild.id;
+   var creacionGremio=new Date(datos.guild.created_date).toLocaleDateString();
+   }
+else
+var gremio=null
+
+var maxRatingAc=datos.max_rating;
+var rankAc=datos.rank;
+var maxRankAc=datos.max_rank;
+var bataAc=1.0*datos.battles;
+var ganaAc=1.0*datos.wins;
+var championPoints=datos.champion_points;
+var rachaAc=datos.longest_streak;
+var union=new Date(datos.join_date).toLocaleDateString();
+
+
+  $.get("https://game-api.splinterlands.com/players/balances?username="+jugador, function(balances, sta) {
+ 
+
+ if(balances!=null)
+    {
+var i,orbes,DEC,poc_leg,poc_oro,ECR,creditos;
+var alfa,beta,untamed,pos_mis,poc_quest;
+	for(i=0;i<balances.length;i++)
+	{
+	switch(balances[i].token)
+	   {
+	   case "ORB": orbes=balances[i].balance;
+	               break;	   
+	   case "LEGENDARY": poc_leg=balances[i].balance;
+	               break;	
+	   case "GOLD": poc_oro=balances[i].balance;
+	               break;
+	   case "DEC": DEC=Math.round(balances[i].balance);
+	               break;				   
+	   case "CREDITS": creditos=Math.round(balances[i].balance);
+	               break;				
+	   case "ECR": ECR=balances[i].balance;
+	               break;	
+	   case "BETA": beta=balances[i].balance;
+	               break;
+	   case "UNTAMED": untamed=Math.round(balances[i].balance);
+	               break;				   
+	   case "MYSTERY": poc_mis=balances[i].balance;
+	               break;	
+	   case "QUEST": poc_quest=balances[i].balance;
+	               break;	
+	   case "ALPHA": alfa=balances[i].balance;
+	               break;				   
+	   }
+	}
+		if (typeof DEC === "undefined")
+	   DEC=0;
+		if (typeof creditos === "undefined")
+	   creditos=0;
+	   	if (typeof alfa === "undefined")
+	   alfa=0;
+	   	if (typeof beta === "undefined")
+	   beta=0;
+	   	if (typeof untamed === "undefined")
+	   untamed=0;
+	if (typeof orbes === "undefined")
+	   orbes=0;
+	if (typeof poc_leg === "undefined")
+	   poc_leg=0;
+	 	if (typeof poc_oro === "undefined")
+	   poc_oro=0; 
+	 	if (typeof poc_mis === "undefined")
+	   poc_mis=0; 
+	   	 	if (typeof poc_quest === "undefined")
+	   poc_quest=0; 
+
+ $.get("https://game-api.splinterlands.com/players/quests?username="+jugador, function(quest, status) {
+  if(quest.length!=0)
+    {
+	tsCreaQ=new Date(quest[0].created_date).getTime();
+	completado=quest[0].claim_trx_id;
+	if(completado!=null)
+	{
+	tsactual=new Date().getTime();
+	tiempofaltantems=82800000-(tsactual-tsCreaQ);
+	if(tiempofaltantems<0)
+	  negativo=true;
+    var horasfaltantes=formatoHora(tiempofaltantems);
+   }
+	else
+		{
+		totalbat=quest[0].total_items;
+       complbat=quest[0].completed_items;
+	   if(complbat>totalbat)
+	      complbat=totalbat;
+	          elementoQuest=quest[0].name;
+    }
+   }
+
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+  $.get("https://game-api.splinterlands.com/players/season_details?name="+jugador, function(data, status) {
+console.log(data);
+var tam=data.length;
+
+var ancho=600;
+var alto=400;
+
+var ratings=new Array(tam);
+var maxR=new Array(tam);
+var pos=new Array(tam);
+var tempo=new Array(tam);
+var bata=new Array(tam);
+var gana=new Array(tam);
+
+
+
+
+var limIrat=data[0].rating;
+var limSrat=data[0].max_rating;
+var limIbat=data[0].wins;
+var limSbat=data[0].battles;
+var limSpos=data[0].rank;
+//document.write("<body>");
+  document.close();
+    document.write("<html><head>");
+//  document.write("<link rel='stylesheet' type='text/css' href='plantilla.css'/>");
+document.write("<link rel='stylesheet' type='text/css' href='componentes.css'/>");
+//document.write("<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css'>");
+document.write("<link rel='stylesheet' href='morris/morris.css'>");
+    document.write("</head>");
+document.write("<body><div id='general'>");
+document.write("<center><h1>MONSTERS EXPLORER</h1></center>");
+
+
+document.write("<div id='izquierdo'>");
+
+document.write("<div id='izquierdo1'>");
+
+
+
+	document.write("<div id='divnombre'>");
+	   document.write("<span id='nombre'>@"+jugador.toUpperCase()+"</span>"); 
+
+	document.write("</div>");
+
+
+
+
+
+document.write("<div id='imgliga'>");
+//	document.write("<img src='IMG/liga/oro1.png' width=80 height=80/>"); 
+	document.write(imagenLiga(ratingAc)); 
+	document.write("</div>"); 
+	
+	document.write("<div id='textliga'>");
+	   document.write("<span id='textoliga'>"+""+rankAc+"º - "+nombreLiga(ratingAc)+" - "+ratingAc+"</span>"); 
+
+	document.write("</div>");
+	
+		document.write("<div id='cofres'>");
+	   document.write("<span id='textocofres'>"+cofresRec(ultimoRatingMax)+" Loot Chests"+"</span>"); 
+
+	document.write("</div>");
+	
+	
+document.write("</div>");
+
+
+document.write("<div id='izquierdo2'>");
+
+
+var ratActual=data[tam-1].rating;
+document.write("<table border='1'>");
+document.write("<tr><td>"+wfecha+"</td><td class='izq'>"+union+"</td></tr>");
+document.write("<tr><td>"+wrating+"</td><td class='izq'>"+ratingAc+"</td></tr>");
+document.write("<tr><td>"+wmaxrating+"</td><td class='izq'>"+maxRatingAc+"</td></tr>");
+document.write("<tr><td>"+wposicion+"</td><td  class='izq'>"+rankAc+"º</td></tr>");
+document.write("<tr><td>"+wmposicion+"</td><td  class='izq'>"+maxRankAc+"º</td></tr>");
+document.write("<tr><td>"+wbatallas+"</td><td class='izq'>"+bataAc+"</td></tr>");
+document.write("<tr><td>"+wvictorias+"</td><td class='izq'>"+ganaAc+"</td></tr>");
+document.write("<tr><td>"+wporcentajevictorias+"</td><td class='izq'>"+average(ganaAc,bataAc)+"%"+"</td></tr>");
+document.write("<tr><td>"+wracha+"</td><td class='izq'>"+rachaAc+"</td></tr>");
+document.write("<tr><td>"+wpuntos+"</td><td class='izq'>"+championPoints+"</td></tr>");
+document.write("<tr><td><img src='IMG/dec.svg' width='20' height='24'/> DEC</td><td class='izq'>"+DEC+" ("+Math.round(DEC*decp*100)/100+"$)</td></tr>");
+document.write("<tr><td><img src='IMG/creditos.png' width='20' height='20'/>"+wcreditos+"</td><td class='izq'>"+creditos+" ("+(creditos/1000)+"$)</td></tr>");
+document.write("<tr><td><img src='IMG/alfa.png' width='20' height='20'/> Alpha Packs</td><td class='izq'>"+alfa+"</td></tr>");
+document.write("<tr><td><img src='IMG/beta.png' width='20' height='20'/> Beta Packs </td><td class='izq'>"+beta+"</td></tr>");
+document.write("<tr><td><img src='IMG/untamed.png' width='20' height='20'/> Untamed Packs</td><td class='izq'>"+untamed+"</td></tr>");
+document.write("<tr><td><img src='IMG/orb.png' width='20' height='20'/>"+worbes+"</</td><td class='izq'>"+orbes+"</td></tr>");
+document.write("<tr><td><img src='IMG/leg.png' width='20' height='20'/>"+wpocionesleg+"</td><td class='izq'>"+poc_leg+"</td></tr>");
+document.write("<tr><td><img src='IMG/gold.png' width='20' height='20'/>"+wpocionesoro+"</</td><td class='izq'>"+poc_oro+"</td></tr>");
+document.write("<tr><td><img src='IMG/poc_m.png' width='20' height='20'/>"+wpocionesmis+"</td><td class='izq'>"+poc_mis+"</td></tr>");
+document.write("<tr><td><img src='IMG/poc_q.png' width='20' height='20'/>"+wpocionesquest+"</td><td class='izq'>"+poc_quest+"</td></tr>");
+document.write("<tr><td>"+wecr+"</td><td class='izq'>"+ECR/100+"%</td></tr>");
+if(gremio!=null)
+{
+document.write("<tr><td class='centrar' colspan='2'><strong>"+wgremio+"</strong></td></tr>");
+document.write("<tr><td colspan='2'><a target='_blank' href='https://splinterlands.com/?p=guild&id="+idGremio+"&tab='>"+gremio+"</a></td></tr>");
+document.write("<tr><td>"+wnivelgremio+"</td><td class='izq'>"+nivelGremio+"</td></tr>");
+document.write("<tr><td>"+wcreaciongremio+"</td><td class='izq'>"+creacionGremio+"</td></tr>");
+}
+
+document.write("</table>");
+document.write("</div>");
+
+
+document.write("</div>");
+
+
+document.write("<div id='segundoContenido'>");
+	if(completado!=null)//Quest Completado
+	  if(!negativo)
+	   document.write("<span id='reloj'"+tituloquest+": "+horasfaltantes+"</span>"); 	
+     else	   
+	   document.write("<span id='reloj'>"+questya+"</span>"); 	  
+     else
+	 {
+	if (typeof elementoQuest === "undefined")
+		    document.write("<span id='reloj'>"+questno+"</span>");
+	else
+	    document.write("<span id='reloj'>"+questcurso+": "+elementoQuest+" "+complbat+"/"+totalbat+"</span>"); 	 
+	 }
+document.write("</div>");
+
+
+
+document.write("<div id='primerContenido'>");
+document.write("<center><h2>"+titulorating+"</h2></center>");
+document.write("<div id='grafica' style='height: "+alto+"px; width:"+ancho+"px'></div><br/><br/>");
+document.write("</div>");
+
+document.write("<div id='segundaGrafica'>");
+document.write("<center><h2>"+titulobatallas+"</h2></center>");
+document.write("<div id='graph2' style='height: "+alto+"px; width:"+ancho+"px'></div><br/><br/>");
+document.write("</div>");
+
+/*
+document.write("<div id='terceraGrafica'>");
+document.write("<center><h2>RANKING</h2></center>");
+document.write("<div id='graph3' style='height: "+alto+"px; width:"+ancho+"px'></div><br/><br/>");
+document.write("</div>");
+*/
+
+
+document.write("</div>");
+
+var numTemp=data.length;
+document.write("<div id='secundario' style='width:970px; height:"+(70+numTemp*28)+";'>");
+document.write("<center><h2>"+tituloestadisticas+"</h2></center>");
+  document.write("<table border=1>");
+  if(idioma=='E')
+    document.write("<tr><th>Fecha</th><th>Temp.</th><th>Rating</th><th>Rat. Max.</th><th>Rank</th><th>Vict./Bat.</th><th>% Vic.</th><th>Racha</th></tr>");
+  else
+document.write("<tr><th>Date</th><th>Season</th><th>Rating</th><th>Max. Rat.</th><th>Rank</th><th>Wins/Bat.</th><th>% Wins</th><th>Streak</th></tr>");
+
+for(i=0;i<data.length;i++)
+  {
+   tempo[i]=data[i].season;
+ ratings[i]=1.0*data[i].rating;
+ if(ratings[i]<limIrat)
+   limIrat=ratings[i];
+   
+  maxR[i]=1.0*data[i].max_rating;
+   if(maxR[i]>limSrat)
+   limSrat=maxR[i];
+
+
+  pos[i]=1.0*data[i].rank;
+     if(pos[i]>limSpos)
+        limSpos=pos[i];
+  
+  bata[i]=data[i].battles;
+ 
+  gana[i]=data[i].wins;
+  
+   if(gana[i]<limIbat)
+   limIbat=gana[i];
+     if(bata[i]>limSbat)
+   limSbat=bata[i];
+  
+
+  document.write("<tr><td>"+fechaTemporada(data[i].season)+"</td><td class='izq'>"+data[i].season+"</td><td class='izq'>"+data[i].rating+"</td><td class='izq'>"+data[i].max_rating+"</td>"+
+  "<td class='izq'>"+data[i].rank+"º</td><td class='izq'>"+data[i].wins+"/"+data[i].battles+"</td><td class='izq'>"+average(data[i].wins,data[i].battles)+"%</td>"+"<td class='izq'>"+data[i].longest_streak+"</td></tr>");
+ }
+  document.write("</table>");
+
+document.write("</div>");
+
+
+if(limIbat<50)
+  limIbat=50;
+if(limIrat<100)
+  limIrat=100;
+  
+  
+var decimal_data = [];
+var decimal_data2 = [];
+var decimal_data3 = [];
+for (var i = 0; i <= tam; i ++) {
+  decimal_data.push({
+    x: fechaTemporada(tempo[i])+"(T"+tempo[i]+")",
+    y: ratings[i],
+	z: maxR[i]
+  });
+    decimal_data2.push({
+    x: fechaTemporada(tempo[i])+"(T"+tempo[i]+")",
+    y: bata[i],
+	z: gana[i]
+  });
+      decimal_data3.push({
+    x: fechaTemporada(tempo[i])+"(T"+tempo[i]+")",
+    y: pos[i]
+  });
+}
+
+window.m = Morris.Line({
+  element: 'grafica',
+  data: decimal_data,
+  xkey: 'x',
+  ykeys: ['y','z'],
+  labels: [wrating,wmaxrating],
+  parseTime: false,
+  lineColors: ['green','blue'],
+  ymax: Math.round((1.0*limSrat+100)/100)*100, 
+  ymin: Math.round((1.0*limIrat-100)/100)*100
+});
+
+window.m = Morris.Line({
+  element: 'graph2',
+  data: decimal_data2,
+  xkey: 'x',
+  ykeys: ['y','z'],
+  labels: [wbatallas,wvictorias],
+  parseTime: false,
+    lineColors: ['red','blue'],
+  ymax: Math.round((1.0*limSbat+50)/10)*10, 
+  //ymin: Math.round((1.0*limIbat-50)/10)*10
+ ymin: 0
+});
+
+/*
+window.m = Morris.Line({
+  element: 'graph3',
+  data: decimal_data3,
+  xkey: 'x',
+  ykeys: ['y'],
+  labels: ['Rank'],
+  parseTime: false,
+ //ymax: limSpos, 
+  ymax: Math.round((1.0*limSpos+100)/100)*100, 
+  ymin: 0
+});
+*/
+
+
+interv=setInterval(actualizarTiempo,1000);
+
+
+
+
+
+
+
+
+
+
+document.write("</body>");
+    document.write("</html>");
+	return true;
+  });});
+  }
+  }
+  );
+  
+  }
+  }); }});
+  } 
+   
+   
+   function formatoHora(ms)
+  {
+  var seg=Math.floor(ms/1000);
+  var min,s,m,h;
+  s=seg%60;
+  if(s>=0 && s<10)
+    s="0"+s;
+  min=Math.floor(seg/60);
+  m=min%60;
+  if(m>=0 && m<10)
+    m="0"+m;
+  h=Math.floor(min/60); 
+    if(h>=0 && h<10)
+    h="0"+h;
+  return h+":"+m+":"+s;
+  }
+   
+   
+   
+
+     function fechaTemporada(temp)
+   {
+    var anno=19+Math.floor((temp-6)/24);
+	var mes=(temp+19)%24;
+	if(mes==0)
+	  mes=24;
+	if(idioma=='E')
+	{
+    if(mes<=2)	
+	   mes="ENE"
+    else if(mes<=4)	
+	   mes="FEB"	  
+    else if(mes<=6)	
+	   mes="MAR"
+    else if(mes<=8)	
+	   mes="ABR"
+    else if(mes<=10)	
+	   mes="MAY"
+    else if(mes<=12)	
+	   mes="JUN"
+    else if(mes<=14)	
+	   mes="JUL"
+    else if(mes<=16)	
+	   mes="AGO"
+    else if(mes<=18)	
+	   mes="SEP"
+    else if(mes<=20)	
+	   mes="OCT"
+    else if(mes<=22)	
+	   mes="NOV"
+    else 	
+	   mes="DIC"
+    }
+	else if(idioma=='I')
+	{
+    if(mes<=2)	
+	   mes="JAN"
+    else if(mes<=4)	
+	   mes="FEB"	  
+    else if(mes<=6)	
+	   mes="MAR"
+    else if(mes<=8)	
+	   mes="APR"
+    else if(mes<=10)	
+	   mes="MAY"
+    else if(mes<=12)	
+	   mes="JUN"
+    else if(mes<=14)	
+	   mes="JUL"
+    else if(mes<=16)	
+	   mes="AUG"
+    else if(mes<=18)	
+	   mes="SEP"
+    else if(mes<=20)	
+	   mes="OCT"
+    else if(mes<=22)	
+	   mes="NOV"
+    else 	
+	   mes="DEC"
+    }
+	   
+    return mes+"/"+anno;
+  
+   }
+
+   function actualizarTiempo()
+   {
+var nega=false;
+   	tsactual=new Date().getTime();
+	var tiemporestantems=82800000-(tsactual-tsCreaQ);
+	if(tiemporestantems<0)
+	  nega=true;
+    var horas=formatoHora(tiemporestantems);
+	if(completado!=null)
+	if(!nega)
+         document.getElementById('reloj').innerHTML=tituloquest+": "+horas;
+    else
+	       {
+		   document.getElementById('reloj').innerHTML=questya;
+		   clearInterval(interv);
+		   }
+   }
+   
+   function imagenLiga(rati)
+   {
+   var cadena;
+    if(rati<100)
+   cadena="<img src='IMG/liga/novice.png' width=80 height=80/>"; 
+    else if(rati<400)
+   cadena="<img src='IMG/liga/bron3.png' width=80 height=80/>";   
+    else if(rati<700)
+   cadena="<img src='IMG/liga/bron2.png' width=80 height=80/>";   
+    else if(rati<1000)
+   cadena="<img src='IMG/liga/bron1.png' width=80 height=80/>";   
+    else if(rati<1300)
+   cadena="<img src='IMG/liga/pla3.png'  width=80 height=80/>";
+    else if(rati<1600)
+   cadena="<img src='IMG/liga/pla2.png'  width=80 height=80/>";
+    else if(rati<1900)
+   cadena="<img src='IMG/liga/pla1.png' width=80 height=80/>";
+    else if(rati<2200)
+   cadena="<img src='IMG/liga/oro3.png'  width=80 height=80/>";
+    else if(rati<2500)
+   cadena="<img src='IMG/liga/oro2.png'  width=80 height=80/>";
+    else if(rati<2800)
+   cadena="<img src='IMG/liga/oro1.png'  width=80 height=80/>";
+    else if(rati<3100)
+   cadena="<img src='IMG/liga/dia3.png' width=80 height=80/>";
+    else if(rati<3400)
+   cadena="<img src='IMG/liga/dia2.png' width=80 height=80/>";
+    else if(rati<3700)
+   cadena="<img src='IMG/liga/dia1.png' width=80 height=80/>";
+    else if(rati<4200)
+   cadena="<img src='IMG/liga/cha3.png' width=125 height=80/>";
+    else if(rati<4700)
+   cadena="<img src='IMG/liga/cha2.png' width=125 height=80/>";
+      else 
+   cadena="<img src='IMG/liga/cha1.png' width=125 height=80/>"; 
+   
+return cadena;
+  }
+   
+   
+   
+   
+      function nombreLiga(rati)
+   {
+   var cadena;
+    if(rati<100)
+   cadena="NOVICE"; 
+    else if(rati<400)
+   cadena="BRONZE III"; 
+    else if(rati<700)
+   cadena="BRONZE II"; 
+    else if(rati<1000)
+   cadena="BRONZE I";   
+    else if(rati<1300)
+   cadena="SILVER III"; 
+    else if(rati<1600)
+     cadena="SILVER II"; 
+    else if(rati<1900)
+   cadena="SILVER I"; 
+    else if(rati<2200)
+   cadena="GOLD III"; 
+    else if(rati<2500)
+   cadena="GOLD II"; 
+    else if(rati<2800)
+   cadena="GOLD I"; 
+    else if(rati<3100)
+     cadena="DIAMOND III"; 
+    else if(rati<3400)
+     cadena="DIAMOND II"; 
+    else if(rati<3700)
+     cadena="DIAMOND I"; 
+    else if(rati<4200)
+     cadena="CHAMPION III"; 
+    else if(rati<4700)
+     cadena="CHAMPION II"; 
+      else 
+     cadena="CHAMPION I"; 
+   
+return cadena;
+  }
+   
+   
+   
+      
+      function cofresRec(rati)
+   {
+   var cadena;
+    if(rati<100)
+   cadena=0; 
+    else if(rati<400)
+   cadena=5; 
+    else if(rati<700)
+   cadena=7; 
+    else if(rati<1000)
+   cadena=9;   
+    else if(rati<1300)
+   cadena=12; 
+    else if(rati<1600)
+     cadena=15; 
+    else if(rati<1900)
+   cadena=18; 
+    else if(rati<2200)
+   cadena=22; 
+    else if(rati<2500)
+   cadena=26; 
+    else if(rati<2800)
+   cadena=30; 
+    else if(rati<3100)
+     cadena=40; 
+    else if(rati<3400)
+     cadena=50; 
+    else if(rati<3700)
+     cadena=60; 
+    else if(rati<4200)
+     cadena=80; 
+    else if(rati<4700)
+     cadena=120; 
+      else 
+     cadena=150; 
+   
+return cadena;
+  }
+   
+ function average(gan,bat)
+{
+if(bat>0)
+return Math.round(10000*gan/bat)/100
+else
+return 0;
+} 
+   
+   
+   var wfecha,wrating,wmaxrating,wposicion,wmposicion,wbatallas,wvictorias,wporcentajevictorias,
+      wracha,wpuntos,wcreditos,worbes,wpocionesleg,wpocionesoro,wpocionesmis,wpocionesquest,wecr,
+	  titulorating,titulobatallas,tituloestadisticas,tituloquest,wgremio,wnivelgremio,wcreaciongremio,questno,
+	  questcurso,questya;
+   
+   function espanol()
+   {
+   wfecha="Fecha de Inicio";
+   wrating="Rating";
+   wmaxrating="Rating Máximo";  
+   wposicion="Posición Actual"; 
+   wmposicion="Mejor Posición"; 
+   wbatallas="Batallas"; 
+   wvictorias="Víctorias"; 
+   wporcentajevictorias="Porcentaje de Víctorias"; 
+   wracha="Mejor Racha";
+   wpuntos="Puntos de Campeón";
+   wcreditos="Créditos";    
+   worbes="Orbes"; 
+   wpocionesleg="Pociones Legendarias"; 
+   wpocionesoro="Pociones Doradas"; 
+   wpocionesmis="Pociones Misteriosas"; 
+   wpocionesquest="Pociones Quest"; 
+    wecr="Tasa de Captura de Energía"; 
+	titulorating="Clasificación por Temporada";
+	titulobatallas="Batallas y Victorias"
+    tituloestadisticas="Tabla de Estadísticas";	
+	 tituloquest="Tiempo faltante para la misión";	
+	 questya="Es hora del Quest ";
+	 questcurso="Quest en curso";	
+	 questno="Quest no disponible";		 
+	wgremio="GREMIO";
+	wnivelgremio="Nivel";
+	wcreaciongremio="Fundado";
+   }
+   
+   
+      function ingles()
+   {
+   wfecha="Join Date";
+   wrating="Rating";
+   wmaxrating="Highest Rating";  
+   wposicion="Rank"; 
+   wmposicion="Highest Rank"; 
+   wbatallas="Battles"; 
+   wvictorias="Wins"; 
+   wporcentajevictorias="% Wins"; 
+   wracha="Longest Streak";
+   wpuntos="Champion Points";
+   wcreditos="Credits";    
+   worbes="Orbs"; 
+   wpocionesleg="Legendary Potions"; 
+   wpocionesoro="Alchemy Potions"; 
+   wpocionesmis="Mystery Potions"; 
+   wpocionesquest="Quest Potions"; 
+    wecr="Energy Capture Rate"; 
+	titulorating="Ranking history";
+	titulobatallas="Battles and Wins"
+    tituloestadisticas="Statistics Table";	
+	 tituloquest="Next quest in";//revisar	
+	 questya="It's quest time";
+	 questcurso="Active Quest";	
+	 questno="Quest not available";		 
+	wgremio="GUILD";
+	wnivelgremio="Level";
+	wcreaciongremio="Created date";
+   }
+   
+   
+   function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+    results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+   
+   
+   
+   
+   
+   
+   
+ </script>   
+
+
+
+
+
+</html>
