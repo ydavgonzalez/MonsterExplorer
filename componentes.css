@@ -5,7 +5,11 @@
 
 body {
 	/*background-color: #DDDDFF;*/
-	background: repeat-y center/100% url("./IMG/nubes.jpg");
+	/*background: url("./IMG/textura.jpg");*/
+	background-color:rgb(250,255,255);
+	background-repeat: repeat-x repeat-y;
+	background-position: center center;
+	background-size: cover;
 }
 
 table tr:hover {
@@ -15,14 +19,31 @@ table tr:hover {
 
 div#general{
 	margin:auto;
-	background-color:#E5E5E5;
-	width:970px;
+	background-color:#EAEAEA;
+	width:1000px;
 	height:1200px;
+
 }
+
+
+
+div#piedepagina{
+	margin:auto;
+	background-color:#FCB3B4;
+	width:1000px;
+	height:80px;
+	   border-color: #aaaaff;
+   border-width: 1px;
+   border-style: solid;
+}
+
 
 div#secundario{
 	margin:auto;
-	background-color:#DDFFFF;
+	background-color:#EEFEEB;
+		   border-color: #aaaaff;
+   border-width: 1px;
+   border-style: solid;
 }
 
 div#izquierdo{
@@ -180,7 +201,7 @@ div#segundoContenido{
 
 div#segundaGrafica{
 	float:right;
-	margin:auto;
+	margin:40px auto;
 	background-color:#FFFFFF;
 	width:600px;
 	height:450px;
@@ -297,9 +318,9 @@ th {
 	color: #1A13B4;
 	border: 1px solid blue;
 	text-align:center; 
-	margin: 0 auto;
-	padding-top: 0px;
-	padding-bottom: 0px;
+	margin: 1 1;
+	padding-top: 1px;
+	padding-bottom: 1px;
 	padding-left: 5px;
 	padding-right: 5px;
 	border-collapse: collapse;
@@ -316,7 +337,7 @@ h1{
     text-shadow:0 0 1px #00F;
     color:#000000;
     font-size:2em;
-    padding:2px 0 0;
+    padding:2px 2px 2px;
     text-transform:capitalize;
     line-height:1.2em;
 }
